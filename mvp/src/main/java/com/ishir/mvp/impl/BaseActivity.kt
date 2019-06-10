@@ -1,10 +1,10 @@
-package com.ishir.mvp.impl
+package com.bennyhuo.mvp.impl
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.ishir.mvp.IMvpView
 import com.ishir.mvp.IPresenter
-import com.bennyhuo.mvp.impl.BasePresenter
+import com.ishir.mvp.impl.BasePresenter
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import kotlin.reflect.KClass
@@ -17,7 +17,8 @@ abstract class BaseActivity<out P : BasePresenter<BaseActivity<P>>> : AppCompatA
     final override val presenter: P
 
     init {
-        presenter = createPresenterKt()
+//        presenter = createPresenterKt()
+        presenter = createPresenter()
         presenter.view = this
     }
 
@@ -28,7 +29,7 @@ abstract class BaseActivity<out P : BasePresenter<BaseActivity<P>>> : AppCompatA
                 yield(thisClass.supertypes)
                 thisClass = thisClass.supertypes.firstOrNull()?.jvmErasure ?: break
             }
-        }.flatMap { it ->
+        }.flatMap {
             it.flatMap { it.arguments }.asSequence()
         }.first {
             it.type?.jvmErasure?.isSubclassOf(IPresenter::class) ?: false

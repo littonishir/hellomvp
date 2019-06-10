@@ -1,9 +1,10 @@
-package com.ishir.mvp.impl
+package com.bennyhuo.mvp.impl
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import com.ishir.mvp.IMvpView
 import com.ishir.mvp.IPresenter
+import com.ishir.mvp.impl.BasePresenter
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import kotlin.reflect.KClass
@@ -11,20 +12,21 @@ import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.jvm.jvmErasure
 
-abstract class BaseFragment<out P : BasePresenter<BaseFragment<P>>> : IMvpView<P>, Fragment() {
+abstract class BaseFragment<out P: BasePresenter<BaseFragment<P>>>: IMvpView<P>,Fragment() {
     override val presenter: P
 
     init {
-        presenter = createPresenterKt()
+//        presenter = createPresenterKt()
+        presenter = createPresenter()
         presenter.view = this
     }
 
     private fun createPresenterKt(): P {
         sequence {
             var thisClass: KClass<*> = this@BaseFragment::class
-            while (true) {
+            while (true){
                 yield(thisClass.supertypes)
-                thisClass = thisClass.supertypes.firstOrNull()?.jvmErasure ?: break
+                thisClass = thisClass.supertypes.firstOrNull()?.jvmErasure?: break
             }
         }.flatMap {
             it.flatMap { it.arguments }.asSequence()
